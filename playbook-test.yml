@@ -13,10 +13,6 @@
         path: "/opt/python3-virtualenv/"
       register: pip_virtualenv_installed
 
-    - name: Check if directory
-      stat:
-        path: "/opt/python3-virtualenv/{{ item.path | basename | splitext | first }}"
-      register: directory_installed
 
     - name: Install Python 3.6
       apt:

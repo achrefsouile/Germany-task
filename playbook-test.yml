@@ -1,0 +1,64 @@
+- hosts: localhost
+  tasks:
+
+    - name: Git checkout
+      git:
+        repo: 'https://github.com/achrefsouile/virtualenv.git'
+        dest: /tmp/project
+        version: main
+
+
+    - name: Check if virtualenv library already installed or not
+      stat:
+        path: "/opt/python3-virtualenv/"
+      register: pip_virtualenv_installed
+
+    - name: Check if directory
+      stat:
+        path: "/opt/python3-virtualenv/{{ item.path | basename | splitext | first }}"
+      register: directory_installed
+
+    - name: Install Python 3.6
+      apt:
+        name: python3-virtualenv, python3-pip
+        state: present
+      become : true
+      when: pip_virtualenv_installed.stat.exists == False
+   
+ 
+    - name: Install virtualenv module
+      pip:
+        name: virtualenv
+      when: pip_virtualenv_installed.stat.exists == False
+
+
+
+    - name: Create Python3-virtual environment folder
+      file:
+        name: /opt/python3-virtualenv
+        state: directory
+      become: true
+
+
+    - name: Find requirements files in folder scripts
+      find:
+        paths: /tmp/project
+        age: 1m
+        patterns: "*.txt"
+        file_type: "file"
+      register: requirements_files
+      
+    - name: create directory
+      shell: mkdir "/opt/python3-virtualenv/{{ item.path | basename | splitext | first }}"
+      with_items: "{{ requirements_files.files }}" 
+      become: true 
+      
+  
+    - name: Initiate virtualenv
+      pip:
+        virtualenv: "/opt/python3-virtualenv/{{ item.path | basename | splitext | first }}"
+        virtualenv_python: python3.8
+        requirements: "{{ item.path }}"
+      with_items: "{{ requirements_files.files }}"
+      become: true 
+    

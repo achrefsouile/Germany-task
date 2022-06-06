@@ -22,15 +22,8 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-#    - name: Run playbook
-#      uses: dawidd6/action-ansible-playbook@v2
-#      with:
-         # Required, playbook filepath
- #        playbook: playbook-test.yml
-          # Optional, directory where playbooks live
- #        directory: ./
-       
-   
+     
+  
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
 
